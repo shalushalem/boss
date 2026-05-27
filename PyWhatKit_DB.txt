@@ -1,0 +1,30 @@
+Date: 27/5/2026
+Time: 16:42
+Phone Number: +919876543210
+Message: proper message to Kavya for me
+--------------------
+Date: 27/5/2026
+Time: 16:43
+Phone Number: +919876543210
+Message: drop a message to Kavya the context was hi
+--------------------
+Date: 27/5/2026
+Time: 16:45
+Phone Number: +919876543210
+Message: now drop a message to Kavya
+--------------------
+Date: 27/5/2026
+Time: 16:45
+Phone Number: +919876543210
+Message: open local WhatsApp and drop a message to Kavya
+--------------------
+Date: 27/5/2026
+Time: 17:5
+Phone Number: +919876543210
+Message: now Sunday hi message in WhatsApp
+--------------------
+Date: 27/5/2026
+Time: 17:9
+Phone Number: +919876543210
+Message: type a hi message
+--------------------
