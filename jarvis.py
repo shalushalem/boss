@@ -1,12 +1,14 @@
 import pyttsx3
 
 from core.brain import JarvisAgent
+from core.config import load_config
 from core.senses import SpeechSense
 
 
 def main() -> None:
-    agent = JarvisAgent()
-    speech = SpeechSense()
+    config = load_config()
+    agent = JarvisAgent(config)
+    speech = SpeechSense(config, status_callback=lambda message: print(f"[Audio] {message}"))
     engine = pyttsx3.init()
     voices = engine.getProperty("voices")
     if voices:
@@ -22,6 +24,12 @@ def main() -> None:
     speak("System initialized. Agentic console online, Boss.")
 
     while True:
+        if speech.wake_word_enabled and not agent.has_pending_action:
+            print(f"\n[Standing by... Say '{speech.wake_word}']")
+            if not speech.wait_for_wake_word():
+                continue
+            print("[Wake word recognized]")
+
         print("\n[Listening... Speak now]")
         user_input = speech.listen()
         if not user_input:
@@ -37,4 +45,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

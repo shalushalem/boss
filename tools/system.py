@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from core.config import AppConfig, load_config
 from core.memory import JarvisMemory
 
 
@@ -27,15 +28,20 @@ Available actions:
 - send_whatsapp: parameters {"contact_name": "kavya", "message": "I'll be 10 minutes late."}
 - save_contact: parameters {"name": "kavya", "phone_number": "+919876543210"}
 - get_system_status: parameters {}
+- analyze_screen: parameters {"question": "what is currently open on my screen?"}
 - shutdown_interface: parameters {}
 Only use an action when the user clearly wants the computer to do something.
+Use analyze_screen when the user asks what is on the screen, asks you to read the screen,
+summarize the current window, inspect visible errors, or answer a question about visible UI.
 For normal questions, conversation, advice, or unclear requests, respond normally.
 """
 
 
 class SystemToolExecutor:
-    def __init__(self, memory: JarvisMemory):
+    def __init__(self, memory: JarvisMemory, config: AppConfig | None = None):
         self.memory = memory
+        self.config = config or load_config()
+        self._vision = None
 
     def build_request(self, action_name: str, parameters: dict[str, Any] | None) -> ActionRequest:
         action_name = (action_name or "").strip()
@@ -146,6 +152,19 @@ class SystemToolExecutor:
             f"CPU {cpu:.0f}%, RAM {memory.percent:.0f}%, {battery_text}, Boss.",
         )
 
+    def _execute_analyze_screen(self, parameters: dict[str, Any]) -> ToolResult:
+        question = str(parameters.get("question", "")).strip()
+        if self._vision is None:
+            from core.senses import VisionSense
+
+            self._vision = VisionSense(self.config)
+
+        result = self._vision.analyze_screen(question)
+        if result.screenshot_path:
+            message = f"{result.message}\nScreenshot saved: {result.screenshot_path}"
+        else:
+            message = result.message
+        return ToolResult(result.ok, message)
+
     def _execute_shutdown_interface(self, parameters: dict[str, Any]) -> ToolResult:
         return ToolResult(True, "Powering down system interface. Goodbye, Boss.", should_shutdown=True)
-

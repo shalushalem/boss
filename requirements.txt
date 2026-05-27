@@ -1,8 +1,14 @@
 AppOpener
+faster-whisper
 Flask
+mss
 ollama
+pillow
 psutil
 PyAudio
+pyautogui
+pytesseract
+pvporcupine
 PyQt5
 pywhatkit
 pywin32

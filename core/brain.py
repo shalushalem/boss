@@ -23,9 +23,13 @@ class JarvisAgent:
     def __init__(self, config: AppConfig | None = None):
         self.config = config or load_config()
         self.memory = JarvisMemory(self.config.memory_db_path, self.config.legacy_memory_path)
-        self.executor = SystemToolExecutor(self.memory)
+        self.executor = SystemToolExecutor(self.memory, self.config)
         self.pending_action: ActionRequest | None = None
         self.chat_history = [{"role": "system", "content": self._system_prompt()}]
+
+    @property
+    def has_pending_action(self) -> bool:
+        return self.pending_action is not None
 
     def _system_prompt(self) -> str:
         return f"""
@@ -131,4 +135,3 @@ Use shutdown_interface when the user asks to shut down, exit, power down, or clo
             if start >= 0 and end > start:
                 return json.loads(raw_content[start : end + 1])
             raise
-

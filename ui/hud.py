@@ -25,7 +25,7 @@ class JarvisWorker(QThread):
         super().__init__()
         self.config = load_config()
         self.agent = JarvisAgent(self.config)
-        self.speech = SpeechSense()
+        self.speech = SpeechSense(self.config, status_callback=self.update_ui_signal.emit)
         self._running = True
 
     def speak(self, text: str) -> None:
@@ -72,6 +72,14 @@ class JarvisWorker(QThread):
         while self._running:
             self.update_telemetry()
             self.particle_state_signal.emit("idle")
+
+            if self.speech.wake_word_enabled and not self.agent.has_pending_action:
+                self.update_ui_signal.emit(f"[Standing by... Say '{self.speech.wake_word}']")
+                if not self.speech.wait_for_wake_word():
+                    continue
+                self.particle_state_signal.emit("listening")
+                self.update_ui_signal.emit("[Wake word recognized]")
+
             user_input = self.listen()
             if not user_input:
                 continue
