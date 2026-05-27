@@ -1,0 +1,11 @@
+AppOpener
+Flask
+ollama
+psutil
+PyAudio
+PyQt5
+pywhatkit
+pywin32
+python-dotenv
+SpeechRecognition
+twilio
